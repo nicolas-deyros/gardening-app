@@ -1,8 +1,8 @@
-# 🌿 Green-Tech Garden Architect
+# 🌿 Green-Tech AI Botanist
 
 **Local-First. Organic. Intelligent.**
 
-The Green-Tech Garden Architect is a local-first, AI-powered gardening assistant designed to help you cultivate a thriving, organic garden. It leverages local intelligence to provide personalized planting advice, weather-aware insights, and pest management solutions without relying on cloud-based data harvesting.
+The Green-Tech AI Botanist is a local-first, AI-powered gardening assistant designed to help you cultivate a thriving, organic garden. It leverages local intelligence to provide personalized planting advice, weather-aware insights, and pest management solutions without relying on cloud-based data harvesting.
 
 ## ✨ Features
 
