@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ChatInterface from "../components/ChatInterface";
+---
+
+<Layout title="Architect Chat">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-6 text-green-900">
+      The Green-Tech Architect
+    </h1>
+    <p class="text-center text-stone-600 mb-8 max-w-2xl mx-auto">
+      Ask about organic solutions, companion planting, or upload a photo to
+      identify issues.
+    </p>
+
+    <ChatInterface client:load />
+  </div>
+</Layout>

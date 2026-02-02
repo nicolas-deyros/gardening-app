@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color Palette - Green-Tech Aesthetic */
+  
+  /* Primary Greens */
+  --color-leaf-50: #f0fdf4;
+  --color-leaf-100: #dcfce7;
+  --color-leaf-500: #22c55e;
+  --color-leaf-700: #15803d;
+  --color-leaf-900: #14532d;
+
+  /* Earth Tones */
+  --color-soil-100: #fff7ed;
+  --color-soil-500: #f97316;
+  --color-soil-900: #7c2d12;
+
+  /* Tech Accents */
+  --color-cyber-green: #4ade80;
+
+  /* Semantic Map (Using CSS variables for mapping if needed, or direct usage) */
+  --color-bg-primary: #ffffff;
+  --color-text-primary: #14532d; 
+}
+
+/* Custom Utilities */
+@layer components {
+  /* Glassmorphism Card */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-xl rounded-2xl;
+  }
+
+  /* Button Styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full 
+           bg-leaf-700 text-white font-medium transition-all duration-300
+           hover:bg-leaf-500 hover:shadow-lg hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full
+           bg-soil-500 text-white font-medium transition-all duration-300
+           hover:bg-soil-500/80 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  /* Badge/Tag */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+@layer base {
+  html {
+    @apply h-full font-sans antialiased bg-stone-50 text-stone-900;
+  }
+
+  body {
+    @apply h-full flex flex-col;
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-leaf-900 tracking-tight;
+  }
+
+  h1 { @apply text-4xl md:text-5xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-2xl md:text-3xl; }
+}
