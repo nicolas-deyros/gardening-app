@@ -1,31 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import GardenLens from "../components/GardenLens";
-import { fetchWeather } from "../lib/weather";
+import LocalIntelligence from "../components/LocalIntelligence";
 
 // Default to Buenos Aires (Manuel Alberti area approx) as per persona context
+// Used only for context if needed, but primary logic moved to client
 const DEFAULT_LAT = -34.42;
 const DEFAULT_LON = -58.74;
-
-const weather = await fetchWeather(DEFAULT_LAT, DEFAULT_LON);
-
-// Generate tip based on weather condition (Simple Logic)
-const getDailyTip = (isRainy: boolean, temp: number) => {
-  if (isRainy)
-    return "Rain is coming/here! Perfect time for transplanting - let nature water the roots in.";
-  if (temp > 30)
-    return "Heat alert! ☀️ Avoid planting today and ensure everything is well-mulched.";
-  return "Conditions are stable. Good day for pruning and general maintenance.";
-};
-
-const dailyTip = getDailyTip(weather.isRainy, weather.temp);
 ---
 
 <Layout title="Dashboard">
   <div class="space-y-8">
     <!-- Hero / Welcome -->
     <section class="text-center py-10">
-      <h1 class="mb-4">Welcome back, Garden Architect.</h1>
+      <h1 class="mb-4">Welcome back, Gardener.</h1>
       <p class="text-xl text-stone-600 max-w-2xl mx-auto mb-8">
         Your garden is currently <span class="font-bold text-green-700"
           >thriving</span
@@ -33,33 +21,14 @@ const dailyTip = getDailyTip(weather.isRainy, weather.temp);
       </p>
 
       <!-- Visual Analysis CTA -->
-      <div class="max-w-md mx-auto">
+      <div class="max-w-4xl mx-auto">
         <GardenLens client:load />
       </div>
     </section>
 
     <!-- Weather Logic Card -->
     <div class="grid md:grid-cols-2 gap-6">
-      <article class="glass-panel p-6 border-l-4 border-l-green-500">
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <h2 class="text-lg font-bold text-stone-800">Local Intelligence</h2>
-            <span class="text-sm text-stone-500">Buenos Aires (Default)</span>
-          </div>
-          <span class="text-3xl">{weather.isRainy ? "🌧️" : "🌤️"}</span>
-        </div>
-
-        <div class="flex items-end gap-2 mb-4">
-          <span class="text-4xl font-bold text-stone-900">{weather.temp}°C</span
-          >
-          <span class="text-stone-600 mb-1">{weather.condition}</span>
-        </div>
-
-        <div class="bg-green-50 rounded-lg p-3 text-sm text-green-800">
-          <strong>💡 Architect's Insight:</strong>
-          {dailyTip}
-        </div>
-      </article>
+      <LocalIntelligence client:load />
 
       <article class="glass-panel p-6 border-l-4 border-l-orange-400">
         <h2 class="text-lg font-bold text-stone-800 mb-4">Urgent Actions</h2>
@@ -81,7 +50,7 @@ const dailyTip = getDailyTip(weather.isRainy, weather.temp);
           </li>
         </ul>
         <div class="mt-6">
-          <a href="/chat" class="btn-primary w-full">Ask Architect</a>
+          <a href="/chat" class="btn-primary w-full">Ask AI Botanist</a>
         </div>
       </article>
     </div>

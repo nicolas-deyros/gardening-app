@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { generateArchitectResponse } from '../../lib/gemini';
-import { ARCHITECT_SYSTEM_PROMPT } from '../../lib/prompt';
+import { generateBotanistResponse } from '../../lib/gemini';
+import { SYSTEM_PROMPT } from '../../lib/prompt';
 
 export const prerender = false;
 
@@ -13,10 +13,9 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: "Message or Image required" }), { status: 400 });
     }
 
-    // "The Green-Tech Garden Architect" logic
-    // We inject the system prompt here to ensure every response adheres to the persona.
-    const reply = await generateArchitectResponse(
-      ARCHITECT_SYSTEM_PROMPT,
+    // "The Green-Tech AI Botanist" logic
+    const reply = await generateBotanistResponse(
+      SYSTEM_PROMPT,
       message || (image ? "Analyze this image according to your Visual Analysis protocol." : "Hello"),
       image // Expecting { mimeType: "image/jpeg", data: "base64..." }
     );

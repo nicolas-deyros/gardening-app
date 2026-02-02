@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 
+import ReactMarkdown from 'react-markdown';
+import { SmartCache, generateHash } from '../lib/cache';
+
 export default function GardenLens() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -24,21 +27,33 @@ export default function GardenLens() {
     setLoading(true);
     try {
       // Extract base64 and mimeType
-      // Data URL format: "data:image/jpeg;base64,/9j/4AAQSw..."
       const match = imagePreview.match(/^data:(.*);base64,(.*)$/);
       if (!match) throw new Error("Invalid image format");
 
       const mimeType = match[1];
       const data = match[2];
 
-      const response = await fetch('/api/architect', {
+      // 1. Generate Cache Key (Hash of the base64 data)
+      const imageHash = generateHash(data);
+      const cacheKey = `img_${imageHash}`;
+
+      // 2. Check Cache
+      const cachedAnalysis = SmartCache.get(cacheKey);
+      if (cachedAnalysis) {
+        console.log("Serving from cache 🧠");
+        setAnalysis(cachedAnalysis);
+        setLoading(false);
+        return;
+      }
+
+      // 3. API Call
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           image: { mimeType, data },
-          // The message is optional, the backend handles the default prompt for images
         }),
       });
 
@@ -46,17 +61,21 @@ export default function GardenLens() {
       if (result.error) {
         throw new Error(result.error);
       }
+      
+      // 4. Save to Cache
       setAnalysis(result.reply);
+      SmartCache.set(cacheKey, result.reply);
+
     } catch (error) {
       console.error(error);
-      setAnalysis("⚠️ Connectivity Issue: Could not reach the Architect. Please try again.");
+      setAnalysis("⚠️ Connectivity Issue: Could not reach the Plant AI. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 flex flex-col items-center gap-6">
+    <div className="w-full max-w-4xl mx-auto p-4 flex flex-col items-center gap-6">
       
       {/* Camera / Upload Button */}
       {!imagePreview && (
@@ -81,7 +100,7 @@ export default function GardenLens() {
 
       {/* Preview */}
       {imagePreview && (
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-lg border border-stone-200">
+        <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-lg border border-stone-200">
           <img src={imagePreview} alt="Plant Preview" className="w-full h-64 object-cover" />
           <button 
             onClick={() => setImagePreview(null)}
@@ -108,11 +127,20 @@ export default function GardenLens() {
         <div className="w-full glass-panel p-6 animate-fade-in text-left prose prose-green max-w-none">
           <div className="flex items-center gap-2 mb-4 border-b border-stone-100 pb-2">
             <span className="text-2xl">🧠</span>
-            <h3 className="text-lg font-bold text-green-900 m-0">Architect's Diagnosis</h3>
+            <h3 className="text-lg font-bold text-green-900 m-0">AI Botanist Diagnosis</h3>
           </div>
           <div className="whitespace-pre-wrap text-stone-700 leading-relaxed font-sans">
-             {/* Simple markdown rendering or direct text. For now direct text, can enhance later */}
-             {analysis}
+             <ReactMarkdown 
+                components={{
+                    ul: ({node, ...props}) => <ul className="list-disc pl-4 my-2 space-y-1" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal pl-4 my-2 space-y-1" {...props} />,
+                    li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                    p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                    strong: ({node, ...props}) => <strong className="font-semibold text-green-800" {...props} />,
+                }}
+            >
+                {analysis}
+            </ReactMarkdown>
           </div>
           <button 
             onClick={() => { setImagePreview(null); setAnalysis(null); }}

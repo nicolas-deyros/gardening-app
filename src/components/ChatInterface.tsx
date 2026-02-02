@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { SmartCache, generateHash } from '../lib/cache';
 
 type Message = {
     role: 'user' | 'assistant';
@@ -7,7 +9,7 @@ type Message = {
 
 export default function ChatInterface() {
     const [messages, setMessages] = useState<Message[]>([
-        { role: 'assistant', content: "¡Hola! I am your Green-Tech Garden Architect. 🌿\n\nI'm ready to help you grow a thriving, chemical-free garden. What's growing in your world today?" }
+        { role: 'assistant', content: "¡Hola! I am your Green-Tech AI Botanist. 🌿\n\nI'm ready to help you grow a thriving, chemical-free garden. What's growing in your world today?" }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -29,13 +31,24 @@ export default function ChatInterface() {
         setLoading(true);
 
         try {
-            // Include history context? For now, we send just the last message + system prompt in backend.
-            // Ideally we'd send history, but prompt is huge. 
-            // Let's send the user message.
-            const response = await fetch('/api/architect', {
+            // 1. Generate Cache Key
+            const msgHash = generateHash(userMsg.content.trim().toLowerCase());
+            const cacheKey = `chat_${msgHash}`;
+
+            // 2. Check Cache
+            const cachedReply = SmartCache.get(cacheKey);
+            if (cachedReply) {
+                console.log("Serving from cache 🧠");
+                setMessages(prev => [...prev, { role: 'assistant', content: cachedReply }]);
+                setLoading(false);
+                return;
+            }
+
+            // 3. API Call
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: input })
+                body: JSON.stringify({ message: userMsg.content })
             });
 
             const data = await response.json();
@@ -46,12 +59,15 @@ export default function ChatInterface() {
             };
             
             if (data.error) {
-                assistantMsg.content = "⚠️ Connection error. Please try again.";
+                assistantMsg.content = `⚠️ Connection error: ${data.error}`;
+            } else {
+                // 4. Save to Cache
+                SmartCache.set(cacheKey, data.reply);
             }
 
             setMessages(prev => [...prev, assistantMsg]);
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'assistant', content: "⚠️ connectivity issue." }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: "⚠️ Connectivity issue." }]);
         } finally {
             setLoading(false);
         }
@@ -67,20 +83,34 @@ export default function ChatInterface() {
                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div 
-                            className={`max-w-[80%] rounded-2xl px-5 py-3 shadow-sm whitespace-pre-wrap leading-relaxed ${
+                            className={`max-w-[80%] rounded-2xl px-5 py-3 shadow-sm leading-relaxed ${
                                 msg.role === 'user' 
                                     ? 'bg-green-600 text-white rounded-br-none' 
-                                    : 'bg-white text-stone-800 border border-stone-100 rounded-bl-none'
+                                    : 'bg-white text-stone-800 border border-stone-100 rounded-bl-none prose prose-stone prose-sm max-w-none'
                             }`}
                         >
-                            {msg.content}
+                            {msg.role === 'assistant' ? (
+                                <ReactMarkdown 
+                                    components={{
+                                        ul: ({node, ...props}) => <ul className="list-disc pl-4 my-2 space-y-1" {...props} />,
+                                        ol: ({node, ...props}) => <ol className="list-decimal pl-4 my-2 space-y-1" {...props} />,
+                                        li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                                        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                                        strong: ({node, ...props}) => <strong className="font-semibold text-green-800" {...props} />,
+                                    }}
+                                >
+                                    {msg.content}
+                                </ReactMarkdown>
+                            ) : (
+                                msg.content
+                            )}
                         </div>
                     </div>
                 ))}
                 {loading && (
                     <div className="flex justify-start">
                         <div className="bg-stone-100 rounded-2xl px-4 py-2 text-stone-500 text-sm animate-pulse">
-                            Architect is thinking...
+                            AI Botanist is thinking...
                         </div>
                     </div>
                 )}

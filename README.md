@@ -7,10 +7,12 @@ The Green-Tech Garden Architect is a local-first, AI-powered gardening assistant
 ## ✨ Features
 
 - **🏡 Dashboard**: At-a-glance view of your garden's status, weather conditions, and urgent tasks.
-- **🤖 Architect Chat**: Interact with a specialized AI helper for organic gardening advice, companion planting suggestions, and troubleshooting.
-- **👁️ Plant Vision**: Upload photos to identify plants or diagnose issues using advanced vision capabilities.
-- **🌤️ Local Weather Integration**: Real-time weather data to inform your gardening decisions (e.g., heat alerts, frost warnings).
-- **🔒 Local-First**: Your garden data stays on your machine.
+- **🤖 AI Botanist Diagnosis**: Advanced Vision API analysis for your plant photos.
+- **💬 Interactive Chat**: Talk to a "Green-Tech AI Botanist" persona for organic advice.
+- **📍 Local Intelligence**: Real-time weather tips based on your exact geolocation.
+- **⚡ Smart Caching**: Instantly loads repeated queries and analysis to save data and speed up the app.
+- **📱 Responsive Design**: Fully optimized for mobile and desktop (PWA ready).
+- **🔒 Privacy-First**: Location data is never stored on a server; it's used only for real-time context.
 
 ## 🚀 Getting Started
 

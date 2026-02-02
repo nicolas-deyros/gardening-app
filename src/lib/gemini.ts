@@ -9,9 +9,9 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY || "");
 
 // The 'Green-Tech' persona uses Gemini 1.5 Flash for speed and multimodal capabilities
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-export async function generateArchitectResponse(
+export async function generateBotanistResponse(
   systemPrompt: string,
   userMessage: string,
   inlineImageData?: { mimeType: string; data: string }
@@ -21,7 +21,7 @@ export async function generateArchitectResponse(
     // Ideally we pass system instruction during model config, but for simple request we can prepend.
     // However, 1.5 Flash supports systemInstruction.
     const modelWithSystem = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         systemInstruction: systemPrompt 
     });
 
@@ -41,6 +41,6 @@ export async function generateArchitectResponse(
     return response.text();
   } catch (error) {
     console.error("Gemini API Error:", error);
-    throw new Error("Failed to get organic advice. The Architect is out in the garden.");
+    throw new Error(`Failed to get organic advice: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
